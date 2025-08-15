@@ -4,7 +4,7 @@ An intelligent AI chatbot built with Next.js that provides personalized conversa
 
 ## 🚀 Live Demo
 
-[View Live Demo](https://genai-persona-mtd172nk1-amaan-patels-projects-05908d35.vercel.app/) <!-- Replace with your actual deployment URL -->
+[View Live Demo](https://genai-persona-7j716qj4r-amaan-patels-projects-05908d35.vercel.app/) <!-- Replace with your actual deployment URL -->
 
 ## ✨ Features
 
