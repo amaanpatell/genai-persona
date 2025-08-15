@@ -13,7 +13,7 @@ const personas = [
     name: 'Hitesh Choudhary',
     title: 'Chai aur Code Founder',
     description: 'Passionate about teaching programming with chai analogies. 15+ years experience, 1.6M+ students taught!',
-    avatar: '/api/placeholder/100/100',
+    avatar: 'https://pbs.twimg.com/profile_images/1724344976715468800/MasktpKz_400x400.jpg',
     skills: ['JavaScript', 'Python', 'Web Development', 'Teaching', 'Chai ☕'],
     greeting: 'Hanjii! Namaste! Hitesh Choudhary hu, apka apna chai-loving tech educator! Chai pe charcha karte hain coding ki? ☕😊',
     color: 'from-orange-500 to-amber-500',
@@ -24,22 +24,11 @@ const personas = [
     name: 'Piyush Garg',
     title: 'Full-Stack Developer & Educator',
     description: 'Reality-first teaching approach. 5+ years industry experience, focusing on bridging theory and practical implementation.',
-    avatar: '/api/placeholder/100/100',
+    avatar: 'https://pbs.twimg.com/profile_images/1879075502356586496/V9wQzW7V_400x400.jpg',
     skills: ['Docker', 'React', 'Node.js', 'System Design', 'Reality Checks'],
     greeting: 'Hey everyone! Piyush Garg here. Ready for some reality checks? Let\'s bridge the gap between theory and real-world implementation! 💻',
     color: 'from-blue-500 to-cyan-500',
     icon: <Code2 className="w-5 h-5" />
-  },
-  {
-    id: 'mannu',
-    name: 'Mannu Paaji',
-    title: 'Chill Coder & UI Wizard',
-    description: 'Creator of ui.aceternity.com. Expert in coding aur partying dono! Good vibes aur beautiful UIs ka perfect combo.',
-    avatar: '/api/placeholder/100/100',
-    skills: ['UI Design', 'React', 'Vibes', 'Party Planning', 'Aceternity UI'],
-    greeting: 'Yo yo yo! Mannu Paaji here! 🕶️ Coding aur partying dono mein expert hu bhai. Ready for some chill conversation aur good vibes? ✨',
-    color: 'from-purple-500 to-pink-500',
-    icon: <Sparkles className="w-5 h-5" />
   }
 ]
 
@@ -136,8 +125,8 @@ export default function EnhancedPersonaChatBot() {
     return (
       <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         {/* Animated Header */}
-        <div className={`p-4 bg-gradient-to-r ${selectedPersona.color} shadow-lg`}>
-          <div className="flex items-center justify-between max-w-4xl mx-auto">
+        <div className={`p-2 bg-gradient-to-r ${selectedPersona.color} shadow-lg`}>
+          <div className="flex items-center gap-4 max-w-4xl mx-auto">
             <Button
               variant="ghost"
               size="sm"
@@ -160,7 +149,7 @@ export default function EnhancedPersonaChatBot() {
                   {selectedPersona.icon}
                 </div>
               </div>
-              <div className="text-center">
+              <div>
                 <h2 className="font-bold text-white text-lg">{selectedPersona.name}</h2>
                 <p className="text-xs text-white/80">{selectedPersona.title}</p>
               </div>
@@ -253,12 +242,12 @@ export default function EnhancedPersonaChatBot() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
       {/* Enhanced Header */}
       <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 shadow-xl">
-        <div className="container mx-auto p-4 flex items-center justify-center">
+        <div className="container mx-auto p-2 flex items-center justify-center">
           <div className="flex items-center gap-3">
-            <div className="text-4xl animate-bounce">☕</div>
+            <div className="text-4xl">☕</div>
             <div>
               <h1 className="text-2xl font-bold text-white">Chai With AI Buddies</h1>
               <p className="text-orange-100 text-sm">Your favorite tech educators, now as AI!</p>
@@ -273,37 +262,44 @@ export default function EnhancedPersonaChatBot() {
           <p className="text-gray-400 text-lg">Select who you'd like to learn from today</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
           {personas.map((persona) => (
             <Card
               key={persona.id}
-              className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-white/20 cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-white/10 group"
+              className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-white/30 cursor-pointer transition-all duration-500 hover:scale-105 hover:bg-white/10 group shadow-2xl overflow-hidden relative"
               onClick={() => handlePersonaSelect(persona)}
             >
-              <CardHeader className="text-center pb-4">
-                <div className="relative mx-auto mb-4">
-                  <Avatar className={`h-20 w-20 ring-4 ring-gradient-to-r ${persona.color} ring-opacity-50`}>
-                    <AvatarImage src={persona.avatar} />
-                    <AvatarFallback className={`bg-gradient-to-br ${persona.color} text-white text-xl font-bold`}>
-                      {persona.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className={`absolute -bottom-2 -right-2 p-2 rounded-full bg-gradient-to-br ${persona.color} shadow-lg`}>
-                    {persona.icon}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <CardHeader className="text-left pb-4">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <Avatar className={`h-20 w-20 ring-4 ring-gradient-to-r ${persona.color} ring-opacity-50`}>
+                        <AvatarImage src={persona.avatar} />
+                        <AvatarFallback className={`bg-gradient-to-br ${persona.color} text-white text-xl font-bold`}>
+                          {persona.name.split(' ').map(n => n[0]).join('')}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className={`absolute -bottom-2 -right-2 p-2 rounded-full bg-gradient-to-br ${persona.color} shadow-lg`}>
+                        {persona.icon}
+                      </div>
+                    </div>
+                    <div>
+                      <CardTitle className="text-white text-xl group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
+                        {persona.name}
+                      </CardTitle>
+                      <CardDescription className="text-gray-400 text-sm">{persona.title}</CardDescription>
+                    </div>
                   </div>
                 </div>
-                <CardTitle className="text-white text-xl group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
-                  {persona.name}
-                </CardTitle>
-                <CardDescription className="text-gray-400 text-sm">{persona.title}</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-left">
                 <p className="text-gray-300 text-sm mb-4 leading-relaxed">{persona.description}</p>
                 <div className="flex flex-wrap gap-2">
                   {persona.skills.map((skill) => (
                     <span
                       key={skill}
-                      className={`px-3 py-1 bg-gradient-to-r ${persona.color} bg-opacity-20 text-white text-xs rounded-full border border-white/20 backdrop-blur-sm`}
+                      className={`px-3 py-1 bg-gradient-to-r ${persona.color} bg-opacity-10 text-white text-xs rounded-full border border-white/20 backdrop-blur-sm`}
                     >
                       {skill}
                     </span>
@@ -319,7 +315,7 @@ export default function EnhancedPersonaChatBot() {
             Ready to start learning with AI-powered versions of your favorite educators?
           </p>
           <div className="text-sm text-gray-500">
-            Powered by OpenAI GPT-4 • Made with ☕ and code
+            Powered by OpenAI GPT-4 • Made with ❤️ by Amaan Patel
           </div>
         </div>
       </div>
