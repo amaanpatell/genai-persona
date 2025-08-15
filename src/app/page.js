@@ -1,103 +1,328 @@
-import Image from "next/image";
+'use client'
+import React, { useState, useEffect, useRef } from 'react'
+import { Button } from './components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card'
+import { Input } from './components/ui/input'
+import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
+import { ArrowLeft, Send, User, Coffee, Code2, Sparkles } from 'lucide-react'
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+const personas = [
+  {
+    id: 'hitesh',
+    name: 'Hitesh Choudhary',
+    title: 'Chai aur Code Founder',
+    description: 'Passionate about teaching programming with chai analogies. 15+ years experience, 1.6M+ students taught!',
+    avatar: '/api/placeholder/100/100',
+    skills: ['JavaScript', 'Python', 'Web Development', 'Teaching', 'Chai ☕'],
+    greeting: 'Hanjii! Namaste! Hitesh Choudhary hu, apka apna chai-loving tech educator! Chai pe charcha karte hain coding ki? ☕😊',
+    color: 'from-orange-500 to-amber-500',
+    icon: <Coffee className="w-5 h-5" />
+  },
+  {
+    id: 'piyush',
+    name: 'Piyush Garg',
+    title: 'Full-Stack Developer & Educator',
+    description: 'Reality-first teaching approach. 5+ years industry experience, focusing on bridging theory and practical implementation.',
+    avatar: '/api/placeholder/100/100',
+    skills: ['Docker', 'React', 'Node.js', 'System Design', 'Reality Checks'],
+    greeting: 'Hey everyone! Piyush Garg here. Ready for some reality checks? Let\'s bridge the gap between theory and real-world implementation! 💻',
+    color: 'from-blue-500 to-cyan-500',
+    icon: <Code2 className="w-5 h-5" />
+  },
+  {
+    id: 'mannu',
+    name: 'Mannu Paaji',
+    title: 'Chill Coder & UI Wizard',
+    description: 'Creator of ui.aceternity.com. Expert in coding aur partying dono! Good vibes aur beautiful UIs ka perfect combo.',
+    avatar: '/api/placeholder/100/100',
+    skills: ['UI Design', 'React', 'Vibes', 'Party Planning', 'Aceternity UI'],
+    greeting: 'Yo yo yo! Mannu Paaji here! 🕶️ Coding aur partying dono mein expert hu bhai. Ready for some chill conversation aur good vibes? ✨',
+    color: 'from-purple-500 to-pink-500',
+    icon: <Sparkles className="w-5 h-5" />
+  }
+]
+
+export default function EnhancedPersonaChatBot() {
+  const [selectedPersona, setSelectedPersona] = useState(null)
+  const [messages, setMessages] = useState([])
+  const [inputMessage, setInputMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  const handlePersonaSelect = (persona) => {
+    setSelectedPersona(persona)
+    const initialMessage = {
+      id: 'greeting',
+      content: persona.greeting,
+      sender: 'bot',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+    setMessages([initialMessage])
+  }
+
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || !selectedPersona || isLoading) return
+
+    const userMessage = {
+      id: Date.now().toString(),
+      content: inputMessage,
+      sender: 'user',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+
+    setMessages(prev => [...prev, userMessage])
+    const currentInput = inputMessage
+    setInputMessage('')
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: currentInput,
+          persona: selectedPersona.name
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get response')
+      }
+
+      const data = await response.json()
+
+      const botMessage = {
+        id: (Date.now() + 1).toString(),
+        content: data.response,
+        sender: 'bot',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+
+      setMessages(prev => [...prev, botMessage])
+    } catch (error) {
+      console.error('Error sending message:', error)
+      const errorMessage = {
+        id: (Date.now() + 1).toString(),
+        content: 'Sorry, I encountered an error. Please try again! 😅',
+        sender: 'bot',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
+  const goBack = () => {
+    setSelectedPersona(null)
+    setMessages([])
+  }
+
+  if (selectedPersona) {
+    return (
+      <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* Animated Header */}
+        <div className={`p-4 bg-gradient-to-r ${selectedPersona.color} shadow-lg`}>
+          <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBack}
+              className="text-white hover:bg-white/20 backdrop-blur-sm"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+
+            <div className="flex items-center space-x-3">
+              <div className="relative">
+                <Avatar className="w-10 h-10 ring-2 ring-white/30">
+                  <AvatarImage src={selectedPersona.avatar} alt={selectedPersona.name} />
+                  <AvatarFallback className="bg-white/20 text-white text-sm backdrop-blur-sm">
+                    {selectedPersona.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1">
+                  {selectedPersona.icon}
+                </div>
+              </div>
+              <div className="text-center">
+                <h2 className="font-bold text-white text-lg">{selectedPersona.name}</h2>
+                <p className="text-xs text-white/80">{selectedPersona.title}</p>
+              </div>
+            </div>
+
+            <div className="w-16" /> {/* Spacer for centering */}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-900/50 to-gray-800">
+          <div className="max-w-4xl mx-auto space-y-4">
+            {messages.map((message) => (
+              <div key={message.id} className={`flex gap-3 mb-4 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarImage
+                    src={message.sender === 'bot' ? selectedPersona.avatar : '/api/placeholder/32/32'}
+                    alt={message.sender === 'bot' ? selectedPersona.name : 'User'}
+                  />
+                  <AvatarFallback className={`text-white text-sm ${message.sender === 'bot' ? 'bg-gradient-to-br ' + selectedPersona.color : 'bg-gray-600'}`}>
+                    {message.sender === 'bot'
+                      ? selectedPersona.name.split(' ').map(n => n[0]).join('')
+                      : 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 max-w-2xl">
+                  <div
+                    className={`px-4 py-3 rounded-2xl shadow-lg ${
+                      message.sender === 'user'
+                        ? `bg-gradient-to-r ${selectedPersona.color} text-white rounded-br-md`
+                        : 'bg-white/10 backdrop-blur-sm text-gray-100 border border-white/20 rounded-bl-md'
+                    }`}
+                  >
+                    <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                  <div className={`flex items-center gap-2 mt-1 text-xs text-gray-400 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
+                    <span>{message.sender === 'bot' ? selectedPersona.name : 'You'}</span>
+                    <span>•</span>
+                    <span>{message.timestamp}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {isLoading && (
+              <div className="flex gap-3 mb-4">
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarImage src={selectedPersona.avatar} alt={selectedPersona.name} />
+                  <AvatarFallback className={`bg-gradient-to-br ${selectedPersona.color} text-white text-sm`}>
+                    {selectedPersona.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-3 rounded-2xl rounded-bl-md">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Enhanced Input */}
+        <div className="p-4 bg-gray-800/80 backdrop-blur-sm border-t border-gray-700">
+          <div className="flex gap-3 max-w-4xl mx-auto">
+            <Input
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder={`Message ${selectedPersona.name}...`}
+              disabled={isLoading}
+              className="flex-1 bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder-gray-300 focus:border-white/40 focus:ring-white/20"
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!inputMessage.trim() || isLoading}
+              size="icon"
+              className={`bg-gradient-to-r ${selectedPersona.color} hover:opacity-90 text-white shadow-lg transition-all duration-200`}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 shadow-xl">
+        <div className="container mx-auto p-4 flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="text-4xl animate-bounce">☕</div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Chai With AI Buddies</h1>
+              <p className="text-orange-100 text-sm">Your favorite tech educators, now as AI!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto max-w-6xl p-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-100 mb-4">Choose Your Coding Buddy</h2>
+          <p className="text-gray-400 text-lg">Select who you'd like to learn from today</p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {personas.map((persona) => (
+            <Card
+              key={persona.id}
+              className="bg-white/5 backdrop-blur-sm border-white/10 hover:border-white/20 cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-white/10 group"
+              onClick={() => handlePersonaSelect(persona)}
+            >
+              <CardHeader className="text-center pb-4">
+                <div className="relative mx-auto mb-4">
+                  <Avatar className={`h-20 w-20 ring-4 ring-gradient-to-r ${persona.color} ring-opacity-50`}>
+                    <AvatarImage src={persona.avatar} />
+                    <AvatarFallback className={`bg-gradient-to-br ${persona.color} text-white text-xl font-bold`}>
+                      {persona.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className={`absolute -bottom-2 -right-2 p-2 rounded-full bg-gradient-to-br ${persona.color} shadow-lg`}>
+                    {persona.icon}
+                  </div>
+                </div>
+                <CardTitle className="text-white text-xl group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
+                  {persona.name}
+                </CardTitle>
+                <CardDescription className="text-gray-400 text-sm">{persona.title}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-300 text-sm mb-4 leading-relaxed">{persona.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {persona.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className={`px-3 py-1 bg-gradient-to-r ${persona.color} bg-opacity-20 text-white text-xs rounded-full border border-white/20 backdrop-blur-sm`}
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-400 mb-4">
+            Ready to start learning with AI-powered versions of your favorite educators?
+          </p>
+          <div className="text-sm text-gray-500">
+            Powered by OpenAI GPT-4 • Made with ☕ and code
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
