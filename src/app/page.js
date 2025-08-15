@@ -43,15 +43,31 @@ export default function EnhancedPersonaChatBot() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const handlePersonaSelect = (persona) => {
-    setSelectedPersona(persona)
-    const initialMessage = {
-      id: 'greeting',
-      content: persona.greeting,
-      sender: 'bot',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  // This effect saves the messages to session storage whenever the messages state changes.
+  // It uses a unique key for each persona to maintain separate chat histories.
+  useEffect(() => {
+    if (selectedPersona) {
+      sessionStorage.setItem(`chat-history-${selectedPersona.id}`, JSON.stringify(messages))
     }
-    setMessages([initialMessage])
+  }, [messages, selectedPersona])
+
+  const handlePersonaSelect = (persona) => {
+    // Check if there's an existing chat for this persona in session storage.
+    const storedChat = sessionStorage.getItem(`chat-history-${persona.id}`)
+    if (storedChat) {
+      // If a chat exists, load it from storage.
+      setMessages(JSON.parse(storedChat))
+    } else {
+      // If no chat exists, start a new one with the persona's greeting.
+      const initialMessage = {
+        id: 'greeting',
+        content: persona.greeting,
+        sender: 'bot',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      setMessages([initialMessage])
+    }
+    setSelectedPersona(persona)
   }
 
   const handleSendMessage = async () => {
@@ -123,7 +139,7 @@ export default function EnhancedPersonaChatBot() {
 
   if (selectedPersona) {
     return (
-      <div className="flex flex-col h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="flex flex-col h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         {/* Animated Header */}
         <div className={`p-2 bg-gradient-to-r ${selectedPersona.color} shadow-lg`}>
           <div className="flex items-center gap-4 max-w-4xl mx-auto">
@@ -154,13 +170,11 @@ export default function EnhancedPersonaChatBot() {
                 <p className="text-xs text-white/80">{selectedPersona.title}</p>
               </div>
             </div>
-
-            <div className="w-16" /> {/* Spacer for centering */}
           </div>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-900/50 to-gray-800">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-950/50 to-slate-900">
           <div className="max-w-4xl mx-auto space-y-4">
             {messages.map((message) => (
               <div key={message.id} className={`flex gap-3 mb-4 ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
